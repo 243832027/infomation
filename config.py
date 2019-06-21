@@ -1,18 +1,24 @@
-import redis
+import logging
+from redis import StrictRedis
 
 
 class Config(object):
-
-    SECRET_KEY = "EjpNVSNQTyGi1VvWECj9TvC/+kq3oujee2kTfQUs8yCM6xX9Yjq52v54g+HVoknA"
-    SQLALCHEMY_DATABASE_URI = "mysql://root:mysql@127.0.0.1:3306/information"
+    SECRET_KEY = "iECgbYWReMNxkRprrzMo5KAQYnb2UeZ3bwvReTSt+VSESW0OB8zbglT+6rEcDW9X"
+    SQLALCHEMY_DATABASE_URI = "mysql://root:mysql@127.0.0.1:3306/information27"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     REDIS_HOST = "127.0.0.1"
     REDIS_PORT = 6379
-    SESSION_TYPE = "redis"  # 指定 session 保存到 redis 中
-    SESSION_USE_SIGNER = True  # 让 cookie 中的 session_id 被加密签名处理
-    SESSION_REDIS = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT)  # 使用 redis 的实例
-    PERMANENT_SESSION_LIFETIME = 86400  # session 的有效期，单位是秒
 
+    SESSION_TYPE = "redis"
+    # 开启session签名
+    SESSION_USE_SIGNER = True
+    # 指定 Session 保存的 redis
+    SESSION_REDIS = StrictRedis(host=REDIS_HOST, port=REDIS_PORT)
+    SESSION_PERMANENT = False
+    PERMANENT_SESSION_LIFETIME = 86400 * 2
+
+    LOG_LEVEL = logging.DEBUG
 
 class DevelopementConfig(Config):
     """开发模式下的配置"""
@@ -22,7 +28,7 @@ class DevelopementConfig(Config):
 class ProductionConfig(Config):
     """生产模式下的配置"""
     DEBUG = False
-
+    LOG_LEVEL = logging.WARNING
 
 class TestingConfig(Config):
     DEBUG = True
@@ -30,5 +36,6 @@ class TestingConfig(Config):
 
 config = {
     "development": DevelopementConfig,
-    "production": ProductionConfig
+    "production": ProductionConfig,
+    "testing": TestingConfig
 }
